@@ -38,3 +38,42 @@ function ModelConstructor(options) {
 
   return Model;
 }
+
+function CollectionConstructor(options) {
+  function Collection(modelConstructor) {
+    this.model = modelConstructor;
+    this.models = [];
+  }
+
+  Collection.prototype = {
+    reset: function() {
+      this.models = [];
+    },
+    add: function(model) {
+      var oldModel = _(this.models).findWhere({ id : model.id });
+      var newModel;
+
+      if (oldModel) { return oldModel; } // if an old model with the same id exists, return it
+
+      newModel = new this.model(model); // create a new model using the model constructor
+      this.models.push(newModel); // add the model to the collection of models
+
+      return newModel;
+    },
+    remove: function(arg) {
+      arg = _.isObject(arg) ? arg.id : arg; // if the argument is an object, retrieve its id
+
+      var model = _(this.models).findWhere({ id : arg }); // find the model from the collection by id
+      
+      if (!model) { return; }
+
+      this.models = this.models.filter(function(existing_m) { // reset the models array to an array without the model to remove
+        return existing_m.id !== model.id;
+      });
+    }
+  };
+
+  _.extend(Collection.prototype, options);
+
+  return Collection;
+}
