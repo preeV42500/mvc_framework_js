@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en-US">
   <head>
-    <title>Collection Part 1 Test</title>
+    <title>Collection Part 2 Test</title>
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="stylesheets/cars.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
@@ -11,7 +11,7 @@
   </head>
   <body>
     <main>
-      <article></article>
+      <ul></ul>
 
       <form action="" method="post">
         <h1>Add a Car</h1>
@@ -32,14 +32,17 @@
 
     <script id="cars" type="text/x-handlebars">
       {{#each cars}}
-      <dl>
-        {{#with attributes}}
-        <dt>Make:</dt>
-        <dd>{{make}}</dd>
-        <dt>Model:</dt>
-        <dd>{{model}}</dd>
-        {{/with}}
-      </dl>
+      <li>
+        <dl>
+          {{#with attributes}}
+          <dt>Make:</dt>
+          <dd>{{make}}</dd>
+          <dt>Model:</dt>
+          <dd>{{model}}</dd>
+          {{/with}}
+        </dl>
+        <a data-id="{{id}}" href="#">Remove</a>
+      </li>
       {{/each}}
     </script>
 

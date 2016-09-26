@@ -4,18 +4,16 @@ var Car = new ModelConstructor(),
     Cars = new CollectionConstructor(),
     inventory = new Cars(Car);
 
-inventory.add({
+inventory.set([{
   make: "BMW",
   model: "328i"
-});
-inventory.add({
+}, {
   make: "Mini",
   model: "Cooper"
-});
-inventory.add({
+}, {
   make: "Lotus",
   model: "Elise"
-});
+}]);
 
 $("a").on("click", function(e) {
   e.preventDefault();
@@ -37,8 +35,16 @@ $("form").on("submit", function(e) {
   this.reset();
 });
 
+$("ul").on("click", "a", function(e) {
+  e.preventDefault();
+  var $e = $(e.target);
+
+  inventory.remove(+$e.attr("data-id"));
+  $e.closest("li").remove();
+});
+
 render();
 
 function render() {
-  $("article").html(template({ cars: inventory.models }));
+  $("ul").html(template({ cars: inventory.models }));
 }

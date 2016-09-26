@@ -64,12 +64,19 @@ function CollectionConstructor(options) {
       arg = _.isObject(arg) ? arg.id : arg; // if the argument is an object, retrieve its id
 
       var model = _(this.models).findWhere({ id : arg }); // find the model from the collection by id
-      
+
       if (!model) { return; }
 
       this.models = this.models.filter(function(existing_m) { // reset the models array to an array without the model to remove
         return existing_m.id !== model.id;
       });
+    },
+    set: function(models) {
+      this.reset(); // reset collection
+      models.forEach(this.add.bind(this)); // instantiate models from the objects and add to the collection
+    },
+    get: function(id) {
+      return _(this.models).findWhere({ id: id }); // find a model in the collection by id
     }
   };
 
