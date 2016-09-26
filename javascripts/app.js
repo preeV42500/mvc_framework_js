@@ -1,7 +1,10 @@
-var template = Handlebars.compile($("#cars").html());
-
 var Car = new ModelConstructor(),
     Cars = new CollectionConstructor(),
+    CarView = new ViewConstructor({
+      tag_name: "li",
+      template: Handlebars.compile($("#cars").html())
+    }),
+    $cars = $("ul"),
     inventory = new Cars(Car);
 
 inventory.set([{
@@ -15,11 +18,16 @@ inventory.set([{
   model: "Elise"
 }]);
 
-$("a").on("click", function(e) {
+inventory.models.forEach(function(model) {
+  var view = new CarView(model);
+  $cars.append(view.$el);
+});
+
+$("form a").on("click", function(e) {
   e.preventDefault();
 
   inventory.reset();
-  render();
+  $cars.empty();
 });
 
 $("form").on("submit", function(e) {
@@ -28,23 +36,19 @@ $("form").on("submit", function(e) {
       properties = {
         make: $form.find("[name=make]").val(),
         model: $form.find("[name=model]").val()
-      };
+      },
+      model;
 
-  inventory.add(properties);
-  render();
+  model = inventory.add(properties);
+  $cars.append((new CarView(model)).$el);
   this.reset();
 });
 
-$("ul").on("click", "a", function(e) {
+$cars.on("click", "a", function(e) {
   e.preventDefault();
-  var $e = $(e.target);
+  var $e = $(e.target),
+      model = inventory.get(+$e.attr("data-id"));
 
-  inventory.remove(+$e.attr("data-id"));
-  $e.closest("li").remove();
+  model.view.remove();
+  inventory.remove(model);
 });
-
-render();
-
-function render() {
-  $("ul").html(template({ cars: inventory.models }));
-}

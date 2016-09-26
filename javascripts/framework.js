@@ -84,3 +84,28 @@ function CollectionConstructor(options) {
 
   return Collection;
 }
+
+function ViewConstructor(options) {
+  function View(model) {
+    this.model = model;
+    this.model.view = this; // pointer on model pointing back to view object
+    this.$el = $("<" + this.tag_name + "/>", this.attributes); // create parent html element for view
+    this.render();
+  }
+
+  View.prototype = {
+    tag_name: "div", // represents parent html element to use for the view
+    attributes: {},
+    template: function() { },
+    render: function() {
+      this.$el.html(this.template(this.model.attributes)); // render attributes property of model that's been passed in
+    },
+    remove: function() {
+      this.$el.remove();
+    }
+  };
+
+  _.extend(View.prototype, options);
+
+  return View;
+}
