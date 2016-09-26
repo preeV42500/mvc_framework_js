@@ -13,6 +13,7 @@ function ModelConstructor(options) {
 
   Model.prototype = { // add set and get methods to model's prototype
     __events: [], // internal array to store any callbacks passed in on change property of options object
+    __remove: function() { },
     set: function(key, value) {
       this.attributes[key] = value;
       this.triggerChange();
@@ -67,6 +68,7 @@ function CollectionConstructor(options) {
 
       if (!model) { return; }
 
+      model.__remove();
       this.models = this.models.filter(function(existing_m) { // reset the models array to an array without the model to remove
         return existing_m.id !== model.id;
       });
@@ -88,6 +90,8 @@ function CollectionConstructor(options) {
 function ViewConstructor(options) {
   function View(model) {
     this.model = model;
+    this.model.addCallback(this.render.bind(this)); // add view's render method to callbacks that will be invoked when the model changes
+    this.model.__remove = this.remove.bind(this); // override model's remove method with remove method for view
     this.model.view = this; // pointer on model pointing back to view object
     this.$el = $("<" + this.tag_name + "/>", this.attributes); // create parent html element for view
     this.render();
@@ -96,11 +100,34 @@ function ViewConstructor(options) {
   View.prototype = {
     tag_name: "div", // represents parent html element to use for the view
     attributes: {},
+    events: {},
     template: function() { },
+    bindEvents: function() {
+      var $el = this.$el, // cache parent element
+          parts, event, selector;
+      for (var prop in this.events) { // iterate through events object and split property into event type and selector
+        parts = prop.split(' ');
+        event = parts[0];
+        selector = parts.slice(1).join(' ');
+
+        if (selector) { // if a selector exists, delegate the event binding
+          $el.on(event + ".view", selector, this.events[prop].bind(this));
+        } else { // else bind event directly to parent element
+          $el.on(event + ".view", this.events[prop].bind(this));
+        }
+      }
+    },
+    unbindEvents: function() {
+      this.$el.off(".view"); // unbind all events attached with the .view namespace
+    },
     render: function() {
+      this.unbindEvents(); // unbind any existing events to prevent duplication
       this.$el.html(this.template(this.model.attributes)); // render attributes property of model that's been passed in
+      this.bindEvents();
+      return this.$el;
     },
     remove: function() {
+      this.unbindEvents();
       this.$el.remove();
     }
   };

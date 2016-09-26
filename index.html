@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en-US">
   <head>
-    <title>View Part 1 Test</title>
+    <title>MVC Test</title>
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="stylesheets/cars.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
@@ -38,6 +38,24 @@
         <dd>{{model}}</dd>
       </dl>
       <a data-id="{{id}}" href="#">Remove</a>
+    </script>
+
+    <script id="edit" type="text/x-handlebars">
+      <form action="" method="post">
+        <fieldset>
+          <dl>
+            <dt>Make:</dt>
+            <dd><input type="text" name="edit_make" value="{{make}}" /></dd>
+          </dl>
+          <dl>
+            <dt>Model:</dt>
+            <dd><input type="text" name="edit_model" value="{{model}}" /></dd>
+          </dl>
+        </fieldset>
+        <fieldset>
+          <input type="submit" value="Save" /><a href="#">Cancel</a>
+        </fieldset>
+      </form>
     </script>
 
     <script src="javascripts/app.js"></script>
